@@ -5,7 +5,7 @@ import sys, random
 from typing import Tuple
 class Client():
 	run=False
-	def __init__(self, connect:Tuple[str,int]=("192.168.1.48",9999)) -> None:
+	def __init__(self, connect:Tuple[str,int]=("118.71.27.70",9999)) -> None:
 		signal.signal(signal.SIGINT, self.exit_gracefully)
 		signal.signal(signal.SIGTERM, self.exit_gracefully)
 		self.stop = False
