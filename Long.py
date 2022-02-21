@@ -4,7 +4,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 print(s.getsockname()[0])
 localIP = s.getsockname()[0]
-destination_IP = "192.168.1.47"
+destination_IP = "1.52.202.181"
 #destination_port = int(port)
 destination_port = 80
 i = 1
