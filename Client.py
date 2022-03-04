@@ -9,7 +9,7 @@ from typing import Tuple
 class Client():
     run=False
     #118.71.27.70
-    def __init__(self, connect:Tuple[str,int]=("1.52.38.20",9999)) -> None:
+    def __init__(self, connect:Tuple[str,int]=("27.64.57.85",9999)) -> None:
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
         self.stop = False
